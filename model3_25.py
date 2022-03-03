@@ -19,9 +19,9 @@ random_seed = 1
 #torch.backends.cudnn.enabled = False
 torch.manual_seed(random_seed)
 
-path = '/home/rwf8829/data/Gauguin_HSI_full.tif'
+path = '/home/ID/data/Gauguin_HSI_full.tif'
 
-##GPU 
+## GPU set up and data preparation
 gpu_no = 0
 use_cuda = True
 device = torch.device("cuda:"+str(gpu_no) if use_cuda else "cpu")
@@ -30,10 +30,10 @@ data.to(device)
 
 data = data/torch.max(data)
 data = data.unsqueeze(0)
-
-
 data = F.interpolate(data, size=[384, 256])
 
+
+# convolutional neural network
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
@@ -95,12 +95,12 @@ if torch.cuda.is_available():
 optimizer = torch.optim.Adam(Model.parameters(), lr=0.001)
 criterion = nn.MSELoss()
 
-
 en_output = Model.encode(data)
 print(en_output.shape)
 output = Model(data)
 print(output.shape)
 print(data.shape)
+
 
 # training
 
@@ -115,7 +115,7 @@ for count in range(1200):
     print('Train Epoch: {} \tLoss: {:f}'.format(count, loss.item()))
     loss_curve.append(loss.item())
     if count % 200 == 0:
-        torch.save(Model.state_dict(), '/home/rwf8829/model/model3_25weights.pth')
+        torch.save(Model.state_dict(), '/home/ID/model/model3_25weights.pth')
         
-torch.save(loss_curve, '/home/rwf8829/model/loss_curve14.pth')
+torch.save(loss_curve, '/home/ID/model/loss_curve14.pth')
 
